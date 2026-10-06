@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Invisible World: discover hidden supply and demand curves from the equilibrium points you can observe.">
+  <title>The Invisible World — Friedman Economic Games</title>
+  <link rel="stylesheet" href="assets/cob-brand.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="cob-brand">
+    <div class="cob-brand__inner">
+      <img class="cob-brand__seal" src="assets/cob-seal.png" srcset="assets/cob-seal@2x.png 2x" width="56" height="56" alt="West Texas A&amp;M University · Paul and Virginia Engler College of Business seal">
+      <div class="cob-brand__wordmark">
+        <span class="cob-brand__university">West Texas A&amp;M University</span>
+        <span class="cob-brand__college">Paul and Virginia Engler College of Business</span>
+      </div>
+    </div>
+    <div class="cob-brand__rule" aria-hidden="true"></div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <p class="eyebrow">Friedman Economic Games · Proposal 5</p>
+    <h1>The Invisible World</h1>
+    <p class="intro">In the real world you never see a supply curve or a demand curve, only the price and quantity where they cross. Change the conditions, watch where the market lands, and work out both hidden curves.</p>
+
+    <details class="howto" open>
+      <summary>How to play</summary>
+      <ol>
+        <li>Point <strong>A</strong> shows the market price and quantity under the starting conditions. The curves that produced it are invisible.</li>
+        <li>Change any of the three conditions and choose <strong>Observe</strong> to see where the market lands next. Each observation after A costs 5 points; you may take up to 12.</li>
+        <li>When you think you know a curve, choose Supply or Demand, pick the observation whose conditions it applies to, and give the line: through two observations, by typing two endpoints, or by clicking two spots on the graph.</li>
+        <li>A wrong curve costs 10 points. Find both curves to keep your full score; finding only one halves it.</li>
+        <li>When you finish, the replay reveals the true curves behind every point.</li>
+      </ol>
+      <details class="hint">
+        <summary>Hint</summary>
+        <p>Every observed point sits on both curves at once. If you change something that moves only supply, demand stays put, so the new point and the old one lie on the same demand curve. Which condition can you trust to move only one curve? Is the third one safe to assume? Moving a slider several steps at once makes a bigger, easier-to-read jump.</p>
+      </details>
+    </details>
+
+    <section class="setup" aria-labelledby="setup-heading">
+      <h2 id="setup-heading" class="visually-hidden">World</h2>
+      <div class="setup__row">
+        <label for="commodity">Market</label>
+        <select id="commodity"></select>
+        <span class="setup__code">World code <strong id="scenario-code"></strong></span>
+        <a id="share-link" href="#">Link to this world</a>
+        <button type="button" id="new-world" class="btn btn--quiet">New world</button>
+      </div>
+    </section>
+
+    <section class="panel" id="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading" tabindex="-1">Results and replay</h2>
+      <p class="final" id="final-score"></p>
+      <p id="breakdown"></p>
+      <p id="role-reveal"></p>
+      <div class="replay">
+        <h3 id="replay-heading">Replay</h3>
+        <div class="replay__nav">
+          <button type="button" id="prev" class="btn btn--quiet">Previous</button>
+          <button type="button" id="next" class="btn btn--quiet">Next</button>
+        </div>
+        <p id="replay-text"></p>
+        <p id="replay-groups"></p>
+      </div>
+      <button type="button" id="play-again" class="btn btn--primary">Play a new world</button>
+    </section>
+
+    <div class="play">
+      <section class="panel panel--graph" aria-labelledby="graph-heading">
+        <h2 id="graph-heading">Market observations</h2>
+        <p class="score" aria-live="off">Score: <strong id="score">100</strong> <span id="score-note" class="muted"></span></p>
+        <svg id="graph" viewBox="0 0 364 352" role="img" aria-labelledby="graph-title graph-desc">
+          <title id="graph-title">Price against quantity</title>
+          <desc id="graph-desc"></desc>
+        </svg>
+        <ul class="legend" id="legend"></ul>
+        <p class="muted small" id="graph-help">Click two spots on the graph to place a line's endpoints; clicks near a point snap onto it. You can also drag an endpoint.</p>
+      </section>
+
+      <div class="panel-stack">
+        <section class="panel" id="observe-panel" aria-labelledby="observe-heading">
+          <h2 id="observe-heading">Change conditions</h2>
+          <fieldset id="conditions" class="conditions">
+            <legend class="visually-hidden">Market conditions</legend>
+            <div id="condition-list"></div>
+          </fieldset>
+          <button type="button" id="observe" class="btn btn--primary">Observe point B</button>
+          <p id="observe-note" class="note"></p>
+        </section>
+
+        <section class="panel" id="curve-panel" aria-labelledby="curve-heading">
+          <h2 id="curve-heading">Identify a curve</h2>
+          <form id="curve-form" novalidate>
+            <fieldset class="kind">
+              <legend>Curve</legend>
+              <label class="choice"><input type="radio" name="kind" value="supply" checked> Supply</label>
+              <label class="choice"><input type="radio" name="kind" value="demand"> Demand</label>
+            </fieldset>
+            <div class="field">
+              <label for="attach">Applies under the conditions of observation</label>
+              <select id="attach"></select>
+            </div>
+            <fieldset class="line-entry">
+              <legend>Line</legend>
+              <div class="thru">
+                <span id="thru-label">Through observations</span>
+                <select id="thru-1" aria-labelledby="thru-label thru-1-label"><option value="">—</option></select>
+                <span id="thru-1-label" class="visually-hidden">first point</span>
+                <span aria-hidden="true">and</span>
+                <select id="thru-2" aria-labelledby="thru-label thru-2-label"><option value="">—</option></select>
+                <span id="thru-2-label" class="visually-hidden">second point</span>
+                <button type="button" id="thru-apply" class="btn btn--quiet">Draw</button>
+              </div>
+              <p class="muted small">or set the endpoints:</p>
+              <div class="endpoints">
+                <div class="endpoint">
+                  <span class="endpoint__name">Endpoint 1</span>
+                  <label><span class="visually-hidden">Endpoint 1 </span><span class="q-label">Quantity</span> <input type="number" id="q1" inputmode="decimal"></label>
+                  <label><span class="visually-hidden">Endpoint 1 </span><span class="p-label">Price</span> <input type="number" id="p1" inputmode="decimal"></label>
+                </div>
+                <div class="endpoint">
+                  <span class="endpoint__name">Endpoint 2</span>
+                  <label><span class="visually-hidden">Endpoint 2 </span><span class="q-label">Quantity</span> <input type="number" id="q2" inputmode="decimal"></label>
+                  <label><span class="visually-hidden">Endpoint 2 </span><span class="p-label">Price</span> <input type="number" id="p2" inputmode="decimal"></label>
+                </div>
+              </div>
+            </fieldset>
+            <div class="actions">
+              <button type="submit" id="check" class="btn btn--primary">Check curve</button>
+              <button type="button" id="clear-line" class="btn btn--quiet">Clear line</button>
+            </div>
+            <p id="curve-feedback" class="note"></p>
+          </form>
+          <p class="found" id="found"></p>
+          <button type="button" id="finish" class="btn btn--quiet">Finish</button>
+        </section>
+      </div>
+    </div>
+
+
+    <section class="panel" aria-labelledby="log-heading">
+      <h2 id="log-heading">Observation list</h2>
+      <div class="table-wrap">
+        <table id="log">
+          <thead><tr id="log-head"></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+  </main>
+
+  <footer>
+    <p>Economic concepts: David Friedman (<a href="http://daviddfriedman.com/Living_Paper/Program_Descriptions/program_descriptions.htm">original program description</a>). Development: Eric McKee.</p>
+    <p>Paul and Virginia Engler College of Business · West Texas A&amp;M University</p>
+  </footer>
+
+  <script src="js/model.js"></script>
+  <script src="js/graph.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
